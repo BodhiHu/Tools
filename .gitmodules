@@ -1,0 +1,3 @@
+[submodule "translate-shell"]
+	path = translate-shell
+	url = git@github.com:soimort/translate-shell.git

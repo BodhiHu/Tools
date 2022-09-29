@@ -1,0 +1,15 @@
+{
+  "name": "translate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Bodhi Hu",
+  "dependencies": {
+    "commander": "^9.4.0",
+    "lodash": "^4.17.21",
+    "shelljs": "^0.8.5"
+  }
+}
