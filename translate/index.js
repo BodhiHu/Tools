@@ -25,7 +25,12 @@ function translateFile(fileName) {
 
   const content = fs.readFileSync(fileName).toString();
 
-  const translatedContent = content.replace(/[\u4e00-\u9fa5]+/g, (zhStr) => {
+  const translatedContent = content.replace(/[\u4e00-\u9fa5 ]+/g, (zhStr) => {
+    if (!/[\u4e00-\u9fa5]+/g.test(zhStr)) {
+      return zhStr;
+    }
+
+    zhStr = zhStr.replace(/ /g, '');
     const res = shell.exec(`../translate-shell/build/trans zh:en "${zhStr}" -b`);
     if (res.code !== 0) {
       return zhStr;
