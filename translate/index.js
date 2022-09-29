@@ -20,28 +20,23 @@ const extRegexp = new RegExp((`(.${extensions})$`).split('|').join('|.'), 'i');
 
 function translateFile(fileName) {
   if (!extRegexp.test(fileName)) {
-    console.info("ignoring unsupported file type for :", fileName);
     return;
   }
-
-  console.info(`============================================> start translating for file:`);
-  console.info('    ', fileName);
 
   const content = fs.readFileSync(fileName).toString();
 
   const translatedContent = content.replace(/[\u4e00-\u9fa5]+/g, (zhStr) => {
-    console.info(`Translate ${zhStr}:`);
     const res = shell.exec(`../translate-shell/build/trans zh:en "${zhStr}" -b`);
     if (res.code !== 0) {
-      shell.echo(`${fileName}: Translate failed`);
+      return zhStr;
     }
 
     let enStr = (res.stdout || '').trim();
     if (enStr.length > 0) {
-      return enStr.length <= 24 ? _.startCase(enStr) : _.upperFirst(enStr);
+      enStr = enStr.length <= 24 ? _.startCase(enStr) : _.upperFirst(enStr);
+      console.info(`: ${zhStr} => ${enStr} (in ...${fileName.substr(-30)})\n`);
     }
 
-    console.error(`error for ${zhStr}, ignoring`);
     return zhStr;
   });
 
@@ -51,5 +46,24 @@ function translateFile(fileName) {
 (function main() {
   if (file) {
     translateFile(file);
+    return;
+  }
+
+  if (directory) {
+    const res = shell.exec(`find ${directory} -type f`);
+    if (res.code !== 0) {
+      return;
+    }
+
+    shell.exec('sleep 2; clear;');
+
+    (res.stdout || '').split('\n').forEach((file) => {
+      if (!extRegexp.test(file)) {
+        return;
+      }
+      translateFile(file);
+    });
+
+    return;
   }
 })();
