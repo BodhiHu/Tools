@@ -30,7 +30,18 @@ function translateFile(fileName) {
       return zhStr;
     }
 
-    const trimedZhStr = zhStr.replace(/ /g, '');
+    let trimedZhStr = zhStr.replace(/ /g, '');
+
+    let spaces = zhStr.split(/[\u4e00-\u9fa5]+/g);
+    let leadingSpace = '';
+    let tailSpace = '';
+    if (spaces.length > 0) {
+      leadingSpace = spaces[0];
+      tailSpace = spaces.length > 1 ? spaces[spaces.length - 1] : '';
+    }
+
+    console.info(`#### translate: "${zhStr}". after trim: "${trimedZhStr}"`);
+
     const res = shell.exec(`../translate-shell/build/trans zh:en "${trimedZhStr}" -b`);
     if (res.code !== 0) {
       return zhStr;
@@ -39,7 +50,9 @@ function translateFile(fileName) {
     let enStr = (res.stdout || '').trim();
     if (enStr.length > 0) {
       enStr = enStr.length <= 24 ? _.startCase(enStr) : _.upperFirst(enStr);
-      console.info(`: ${zhStr} => ${enStr} (in ...${fileName.substr(-30)})\n`);
+      enStr = leadingSpace + enStr + tailSpace;
+      console.info(`: "${zhStr}" => "${enStr}" (in ...${fileName.substr(-30)})\n`);
+      return enStr;
     }
 
     return zhStr;
@@ -66,6 +79,7 @@ function translateFile(fileName) {
       if (!extRegexp.test(file)) {
         return;
       }
+      console.info(`Translating ${file}`);
       translateFile(file);
     });
 
