@@ -30,8 +30,8 @@ function translateFile(fileName) {
       return zhStr;
     }
 
-    zhStr = zhStr.replace(/ /g, '');
-    const res = shell.exec(`../translate-shell/build/trans zh:en "${zhStr}" -b`);
+    const trimedZhStr = zhStr.replace(/ /g, '');
+    const res = shell.exec(`../translate-shell/build/trans zh:en "${trimedZhStr}" -b`);
     if (res.code !== 0) {
       return zhStr;
     }
